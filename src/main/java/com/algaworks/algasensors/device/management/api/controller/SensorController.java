@@ -9,6 +9,9 @@ import com.algaworks.algasensors.device.management.domain.repository.SensorRepos
 import io.hypersistence.tsid.TSID;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,6 +22,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class SensorController {
 
     private final SensorRepository sensorRepository;
+
+    @GetMapping
+    public Page<SensorOutput> search(@PageableDefault Pageable pageable) {
+        Page<Sensor> sensorsPage = sensorRepository.findAll(pageable);
+        return sensorsPage.map(this::convertToModel);
+    }
 
     @GetMapping("/{sensorId}")
     public SensorOutput getOne(@PathVariable TSID sensorId) {
